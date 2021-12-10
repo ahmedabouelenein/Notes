@@ -1,0 +1,22 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = null;
+}
+@model string
+
+<html>
+    <body>
+            <p>OIDC_LOGOUT_POST</p>
+            <form method='post' action='https://localhost:9443/oidc/logout'>
+                    <input type='hidden' name='id_token_hint' value='@Model'/>
+                    <input type='hidden' name='post_logout_redirect_uri' value='https://localhost:44390/Home/LogoutLocal'/>
+                    <input type='hidden' name='state' value='yfskjl'/>
+                <button type='submit'>POST</button>
+            </form>
+            <script type='text/javascript'>
+                document.forms[0].submit();
+            </script>
+        </body>
+</html>

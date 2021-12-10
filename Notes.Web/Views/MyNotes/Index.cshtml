@@ -1,0 +1,61 @@
+﻿@model List<NoteViewModel>
+@{
+    var notes = Model.GroupBy(p=>p.Category,p=>p,(key,g)=>new { Category=key,Notes=g.ToList()});
+}
+<div class="jumbotron text-center">
+    <h1>My Notes</h1>
+    <br />
+    <a href="/MyNotes/Create" class="btn btn-primary">Add New Note</a>
+
+</div>
+<div class="container">
+    @if (!notes.Any())
+    {
+        
+         <div class="alert alert-info">
+            <strong>No Notes Exists</strong> Add your First Note
+        </div>
+    }
+    @foreach (var note in notes)
+    {   
+        var rows = (int)Math.Ceiling((double)note.Notes.Count / 3);
+        int index = 0;
+         if (rows > 0)
+    {
+        <div class="alert alert-success">
+            <strong>@(string.IsNullOrEmpty(note.Category)?"General":note.Category)</strong> 
+        </div>
+
+        @for (int r = 0; r < rows; r++)
+        {
+
+            @:<div class="row">
+            for (int i = 0; i < 3; i++)
+            {
+                if (index < note.Notes.Count)
+                {
+                    <div class="col-sm-4">
+                        <div class="card" style="background-color:@(note.Notes[index].Color) ; width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">@note.Notes[index].Title</h5>
+                                @*<h6 class="card-subtitle mb-2 text-muted">@note.Notes[index].Category</h6>*@
+                                <p class="card-text">@note.Notes[index].Details</p>
+                                <form asp-controller="MyNotes" asp-action="Delete" method="post">
+                                    <input type="hidden" name="id" id="id" value="@note.Notes[index].Id"  />
+                                     <button type="submit" class="btn btn-primary">Delete</button>
+                              
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    index++;
+                }
+            }
+            @:</div><br/>
+        }
+
+    }
+    }
+   
+</div>
+

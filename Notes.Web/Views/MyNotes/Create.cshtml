@@ -1,0 +1,42 @@
+﻿@model NoteViewModel
+@{
+    var isSliver = User.Claims.Any(x => x.Type == "groups" && x.Value == "Sliver");
+    var isGold = User.Claims.Any(x => x.Type == "groups" && x.Value == "Gold");
+}
+<form asp-controller="MyNotes" asp-action="Save" method="post">
+    <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" class="form-control" asp-for="Title">
+        <span style="color:red" asp-validation-for="Title"></span>
+    </div>
+    <div class="form-group">
+        <label for="details">Details :</label>
+        <textarea class="form-control" asp-for="Details"></textarea>
+        <span style="color:red" asp-validation-for="Details"></span>
+    </div>
+    <div class="row">
+        @if (isSliver || isGold)
+        {
+            <div class="col-sm-10">
+                <div class="form-group">
+                    <label for="title">Category :</label>
+                    <input type="text" class="form-control" asp-for="Category">
+                    <span style="color:red" asp-validation-for="Category"></span>
+                </div>
+            </div>
+        }
+        @if (isGold)
+        {
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label for="title">Color :</label>
+                    <input type="color" class="form-control" asp-for="Color">
+                    <span style="color:red" asp-validation-for="Color"></span>
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

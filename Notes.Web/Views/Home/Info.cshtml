@@ -1,0 +1,40 @@
+﻿@model InfoViewModel
+
+
+<div class="row">
+    <div class="col-sm-6">
+        <a href="https://jwt.io/" target="_blank">jwt.io</a>
+    </div>
+    <div class="col-sm-6">
+        <a href="https://jwt.ms/" target="_blank">jwt.ms</a>
+    </div>
+</div>
+<h2>Tokens</h2>
+<div class="row">
+    <div class="col-sm-6">
+        <p>IdentityToken</p>
+        <textarea cols="50" rows="25">
+                @Model.IdentityToken
+            </textarea>
+    </div>
+    <div class="col-sm-6">
+        <p>AccessToken</p>
+        <textarea cols="50" rows="25">
+            @Model.AccessToken
+        </textarea>
+    </div>
+</div>
+
+
+<h2>Claims</h2>
+@foreach (var claim in User.Claims.ToList())
+{
+    <div class="row">
+        <div class="col-sm-6">
+            @claim.Type
+        </div>
+        <div class="col-sm-6">
+            @claim.Value
+        </div>
+    </div>
+}
