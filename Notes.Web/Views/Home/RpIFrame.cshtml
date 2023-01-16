@@ -2,18 +2,19 @@
 @{
     Layout = null;
 }
-
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 <html>
 <head>
     <title>OpenID Connect Session Management RP IFrame</title>
     <script language="JavaScript" type="text/javascript">
         var stat = "unchanged";
-        var client_id = '8uPsLXznPnBjfcldrPVffDOihv0a';
+        var client_id = '@Configuration["Idp:ClientId"]';
         var session_state = '@Context.Request.Cookies["session_state"]';
         console.log('session_state cookie', session_state);
         var mes = client_id + " " + session_state;
-        var targetOrigin = 'https://avvenshose.com/oidc/checksession';
-        var authorizationEndpoint = 'https://avvenshose.com/oauth2/authorize';
+        var targetOrigin = '@Configuration["Idp:Address"]oidc/checksession';
+        var authorizationEndpoint = '@Configuration["Idp:Address"]oauth2/authorize';
         function check_session() {
             if (client_id !== null && client_id.length != 0 && client_id !== 'null' && session_state !== null &&
                 session_state.length != 0 && session_state != 'null') {
@@ -40,7 +41,7 @@
                     var clientId = client_id;
                     var scope = 'openid';
                     var responseType = 'code';
-                    var redirectUri = 'https://localhost:44390/signin-oidc'
+                    var redirectUri = 'https://localhost:44378/signin-oidc'
                     var prompt = 'none';
                     console.log( authorizationEndpoint + '?client_id=' + clientId + "&scope=" + scope +
                         "&response_type=" + responseType + "&redirect_uri=" + redirectUri + "&prompt=" + prompt);
@@ -58,7 +59,7 @@
 </head>
 <body onload="setTimer()">
  <iframe id="opIFrame"
-            src="https://avvenshose.com/oidc/checksession?client_id=8uPsLXznPnBjfcldrPVffDOihv0a&redirect_uri=https://localhost:44390/signin-oidc"
+            src="@Configuration["Idp:Address"]oidc/checksession?client_id=@Configuration["Idp:ClientId"]&redirect_uri=https://localhost:44378/signin-oidc"
         frameborder="0" width="0"
         height="0"></iframe>
 </body>
