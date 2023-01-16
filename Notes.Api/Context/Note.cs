@@ -21,13 +21,13 @@ namespace Notes.Api
         [MaxLength(7)]
         public string Color { get; private set; }
         [Required]
-        public Guid UserId { get; private set; }
+        public string UserId { get; private set; }
 
         private Note()
         {
 
         }
-        public Note(Guid userId, string title, string details, string category, string color)
+        public Note(string userId, string title, string details, string category, string color)
         {
             Id = Guid.NewGuid();
             UserId = userId;

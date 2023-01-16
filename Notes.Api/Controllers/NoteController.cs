@@ -27,7 +27,7 @@ namespace Notes.Api.Controllers
         [HttpPost]
         public async Task<Guid> Create(CreateNoteDto inputDto)
         {
-            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userId =User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var note = new Note(userId, inputDto.Title, inputDto.Details, inputDto.Category, inputDto.Color);
             _dbContext.Notes.Add(note);
@@ -37,7 +37,7 @@ namespace Notes.Api.Controllers
         [HttpDelete()]
         public async Task Delete(Guid id)
         {
-            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var note = await _dbContext.Notes.Where(x => x.UserId == userId).FirstOrDefaultAsync(x => x.Id == id);
             if (note == null)
@@ -59,7 +59,7 @@ namespace Notes.Api.Controllers
         }
         private IQueryable<NoteDto> QueryNotes()
         {
-            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             return _dbContext.Notes.Where(x => x.UserId == userId).Select(x => new NoteDto()
             {

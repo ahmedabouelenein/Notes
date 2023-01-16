@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
+using Microsoft.VisualBasic;
 using Notes.Web.HttpHandlers;
 using Notes.Web.IntegrationServices;
 using System;
@@ -55,35 +56,55 @@ namespace Notes.Web
             }).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
-                options.MetadataAddress = _configuration["Idp:Address"] + _configuration["Idp:MetadataAddress"];
+                options.RequireHttpsMetadata= true;
+                options.MetadataAddress = _configuration["Idp:Address"] + "oauth2/token/.well-known/openid-configuration";
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ClientId = _configuration["Idp:ClientId"];
                 options.ClientSecret = _configuration["Idp:ClientSecret"];
                 options.ResponseType = "code";
                 options.SaveTokens = true;
                 options.UsePkce = true;
-                options.Scope.Add("openid");
+                //options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.Scope.Add("email");
                 options.Scope.Add("address");
-                //options.Scope.Add("nationality");
+                options.Scope.Add("nationality");
                 options.Scope.Add("phone");
                 //options.ClaimActions.Remove("iss"); //remove from default mapping
-                //options.ClaimActions.DeleteClaim("sid");//delete from claim list
+                //options.C0laimActions.DeleteClaim("sid");//delete from claim list
                 //options.GetClaimsFromUserInfoEndpoint = true;
                 //options.ClaimActions.Remove("country");
                 //options.ClaimActions.DeleteClaim("country");
                 //options.ClaimActions.MapUniqueJsonKey("groups", "role");
                 options.Events = new OpenIdConnectEvents()
                 {
+                    OnTicketReceived = ctx =>
+                    {
+                        if (ctx.Principal.Identity.IsAuthenticated)
+                        {
+                            ctx.Response.Cookies.Append("session_state", ctx.Request.Form["session_state"]);
+                        }
+                        return Task.FromResult(0);
+                    },
+
                     OnRemoteFailure = ctx =>
                     {
+                        if (ctx.Request.Query.Keys.Any(x => x == "session_state"))
+                        {
+                            ctx.Response.Cookies.Append("session_state", ctx.Request.Query["session_state"]);
+                            ctx.Response.Redirect("Home");
+                        }
+                        else
+                        {
+                            ctx.Response.Redirect("Home/LogoutLocal");
+                     
+                        }
                         ctx.HandleResponse();
-                        ctx.Response.Redirect("Home");
+                        //  
                         return Task.FromResult(0);
                     }
                 };
-               
+
             });
         }
 

@@ -1,0 +1,69 @@
+﻿@model string
+@{
+    Layout = null;
+}
+
+<html>
+<head>
+    <title>OpenID Connect Session Management RP IFrame</title>
+    <script language="JavaScript" type="text/javascript">
+        var stat = "unchanged";
+        var client_id = '8uPsLXznPnBjfcldrPVffDOihv0a';
+        var session_state = '@Context.Request.Cookies["session_state"]';
+        console.log('session_state cookie', session_state);
+        var mes = client_id + " " + session_state;
+        var targetOrigin = 'https://avvenshose.com/oidc/checksession';
+        var authorizationEndpoint = 'https://avvenshose.com/oauth2/authorize';
+        function check_session() {
+            if (client_id !== null && client_id.length != 0 && client_id !== 'null' && session_state !== null &&
+                session_state.length != 0 && session_state != 'null') {
+                var win = document.getElementById("opIFrame").contentWindow;
+                win.postMessage(mes, targetOrigin);
+            }
+        }
+        function setTimer() {
+            alert("LOADED!");
+            console.log('@Model');
+            check_session();
+            setInterval("check_session()", 4 * 1000);
+        }
+        window.addEventListener("message", receiveMessage, false);
+        function receiveMessage(e) {
+            console.log(e.origin)
+            if (targetOrigin.indexOf(e.origin) < 0) {
+                return;
+            }
+            if (e.data == "changed") {
+                console.log("[RP] session state has changed. sending passive request");
+                if (authorizationEndpoint !== null && authorizationEndpoint.length != 0 && authorizationEndpoint !==
+                    'null') {
+                    var clientId = client_id;
+                    var scope = 'openid';
+                    var responseType = 'code';
+                    var redirectUri = 'https://localhost:44390/signin-oidc'
+                    var prompt = 'none';
+                    console.log( authorizationEndpoint + '?client_id=' + clientId + "&scope=" + scope +
+                        "&response_type=" + responseType + "&redirect_uri=" + redirectUri + "&prompt=" + prompt);
+                }
+            }
+            else if (e.data == "unchanged") {
+                console.log("[RP] session state has not changed");
+            }
+            else {
+                console.log("[RP] error while checking session status");
+            }
+        }
+
+    </script>
+</head>
+<body onload="setTimer()">
+ <iframe id="opIFrame"
+            src="https://avvenshose.com/oidc/checksession?client_id=8uPsLXznPnBjfcldrPVffDOihv0a&redirect_uri=https://localhost:44390/signin-oidc"
+        frameborder="0" width="0"
+        height="0"></iframe>
+</body>
+</html>
+
+
+
+

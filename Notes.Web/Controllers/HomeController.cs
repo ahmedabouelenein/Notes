@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -20,10 +21,13 @@ namespace Notes.Web.Controllers
         {
             _logger = logger;
         }
-
-        public IActionResult Index()
+        public IActionResult RpIFrame(string id = "")
         {
-            return View();
+            return View("RpIFrame", id);
+        }
+        public IActionResult Index(string id = "")
+        {
+            return View("Index", id);
         }
         public async Task<IActionResult> Info()
         {
@@ -51,6 +55,12 @@ namespace Notes.Web.Controllers
         public async Task<IActionResult> LogoutLocal()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return RedirectToAction("Login");
+        }
+        [Authorize]
+        public async Task<IActionResult> Login()
+        {
             return RedirectToAction("Index");
         }
 

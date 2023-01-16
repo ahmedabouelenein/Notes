@@ -68,7 +68,7 @@ namespace Notes.Web.HttpHandlers
                 var idpClient = _httpClientFactory.CreateClient("IDPClient");
 
                 // get the discovery document
-                var discoveryReponse = await idpClient.GetDiscoveryDocumentAsync(_configuration["Idp:Address"] + _configuration["Idp:MetadataAddress"]);
+                var discoveryReponse = await idpClient.GetDiscoveryDocumentAsync(_configuration["Idp:Address"] + "oauth2/token/.well-known/openid-configuration");
 
                 // refresh the tokens
                 var refreshToken = await _httpContextAccessor
